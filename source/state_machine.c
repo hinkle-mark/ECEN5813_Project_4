@@ -1,5 +1,7 @@
 #include "state_machine.h"
 #include "i2c.h"
+#include "logger.h"
+#include "gpio.h"
 
 /* Global Vars */
 volatile sm_t state_machine;
@@ -28,18 +30,22 @@ void stateMachineA(state_t * state)
 	switch(*state)
 	{
 		case ST_TempReading:
+			logString(LL_Normal, FN_stateMachineA, "Entering Temperature Read State");
 			next_state = tempReading();
 			break;
 
 		case ST_AvgWait:
+			logString(LL_Normal, FN_stateMachineA, "Entering Average/Wait State");
 			next_state = avgWait();
 			break;
 
 		case ST_Alert:
+			logString(LL_Normal, FN_stateMachineA, "Entering Temperature Alert State");
 			next_state = tempAlert();
 			break;
 
 		case ST_Disconnect:
+			logString(LL_Normal, FN_stateMachineA, "Entering Disconnect State");
 			next_state = disconnect();
 			break;
 
@@ -55,7 +61,10 @@ void stateMachineA(state_t * state)
  * * * * */
 void stateMachineB(state_t * state)
 {
-	state_t next_state = STATE_TABLE[(uint8_t)state].handler();
+	logString(LL_Normal, FN_stateMachineB, "Entering Next State");
+
+	uint8_t idx = stateToIndex(*state);
+	state_t next_state = STATE_TABLE[idx].handler();
 	*state = next_state;
 }
 
@@ -65,19 +74,39 @@ void stateMachineB(state_t * state)
  * * * * */
 state_t tempReading(void)
 {
+	/* Set Led */
+	gpioGreenLEDOn();
+
 	/* Read Sensor */
+	logString(LL_Debug, FN_tempReading, "Initiating I2C Read from TMP102");
 	I2CStatus_t ret = I2CReadTemperature(&data.raw);
 	if(ret == error)
+	{
+		logString(LL_Debug, FN_tempReading, "Temperature Read Failed");
 		return ST_Disconnect;
+	}
+	else
+	{
+		logString(LL_Test, FN_tempReading, "Temperature Read Successful");
+	}
 
 	/* Convert Temperature */
+	logString(LL_Debug, FN_tempReading, "Converting Temperature Value");
 	data.cur = convertTemp(data.raw);
+
+	logTemperature(LL_Normal, FN_tempReading, data.cur);
 
 	/* Check Value */
 	if(data.cur >= 0)
+	{
+		logString(LL_Test, FN_tempReading, "Temperature Above T_Low");
 		return ST_AvgWait;
+	}
 	else
+	{
+		logString(LL_Test, FN_tempReading, "Temperature Below T_Low");
 		return ST_Alert;
+	}
 }
 
 /* * * * *
@@ -86,16 +115,30 @@ state_t tempReading(void)
  * * * * */
 state_t avgWait(void)
 {
+	/* Set Led */
+	gpioGreenLEDOn();
+
 	/* Calculate new avg value */
+	logString(LL_Debug, FN_avgWait, "Calculating New Average Temperature");
 	calculateAverage(data.cur);
 
 	/* Wait 15 Seconds */
+	logString(LL_Debug, FN_avgWait, "Beginning 15 Second Delay");
 	delay(DELAY_15_SEC);
 	num_timeouts++;
+
+	logString(LL_Test, FN_avgWait, "Number of Timeouts:");
+	logInteger(LL_Test, FN_avgWait, (uint32_t)num_timeouts);
+
 	if(num_timeouts >= 4)
 	{
+		logString(LL_Debug, FN_avgWait, "Max Timeouts Completed: Changing State Machines");
 		num_timeouts = 0;
-		state_machine = SM_B;
+
+		if(state_machine == SM_A)
+			state_machine = SM_B;
+		else if(state_machine == SM_B)
+			state_machine = SM_A;
 	}
 
 	/*
@@ -112,13 +155,27 @@ state_t avgWait(void)
  * * * * */
 state_t tempAlert(void)
 {
+	/* Set Led */
+	gpioBlueLEDOn();
+
 	/* Read Sensor */
+	logString(LL_Debug, FN_tempAlert, "Initiating I2C Read from TMP102");
 	I2CStatus_t ret = I2CReadTemperature(&data.raw);
 	if(ret == error)
+	{
+		logString(LL_Debug, FN_tempAlert, "Temperature Read Failed");
 		return ST_Disconnect;
+	}
+	else
+	{
+		logString(LL_Test, FN_tempAlert, "Temperature Read Successful");
+	}
 
 	/* Convert Temperature */
+	logString(LL_Debug, FN_tempAlert, "Converting Temperature Value");
 	data.cur = convertTemp(data.raw);
+
+	logTemperature(LL_Normal, FN_tempAlert, data.cur);
 
 	return ST_AvgWait;
 }
@@ -129,20 +186,13 @@ state_t tempAlert(void)
  * * * * */
 state_t disconnect(void)
 {
+	/* Set Led */
+	gpioRedLEDOn();
+
+	logString(LL_Debug, FN_disconnect, "Ending Program...");
+
 	state_machine = END;
 	return ST_Disconnect;
-}
-
-/* * * * *
- * Brief: convertTemp - translates raw data into float
- * Input: raw_data
- * Returns: float value
- * * * * */
-float convertTemp(uint32_t raw_data)
-{
-	/* Needs Work */
-	float temp = -1.5 * raw_data;
-	return temp;
 }
 
 /* * * * *
@@ -161,23 +211,13 @@ void calculateAverage(float temp)
  * * * * */
 void initSMParameters()
 {
+	logString(LL_Debug, FN_initSMParameters, "Initializing Temperature Data and State Machine Parameters");
+
 	data.raw        = 0;
 	data.cur        = 0;
 	data.avg 		= 0;
 	data.total 		= 0;
 	data.samples 	= 0;
 	num_timeouts 	= 0;
-}
-
-/*
- * Brief: delay - delays the processor
- * Input: delay_time (number of cycles to delay)
- */
-void delay(uint32_t delay_time)
-{
-	for(volatile uint32_t i = 0; i < delay_time; i++)
-	{
-		__asm volatile("nop");
-	}
 }
 

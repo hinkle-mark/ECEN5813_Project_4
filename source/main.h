@@ -14,7 +14,8 @@
 
 static inline bool pollAlertPin(void)
 {
-	return 	GPIO_ReadPinInput(ALERT_PORT, ALERT_PIN);
+//	return 	GPIO_ReadPinInput(ALERT_PORT, ALERT_PIN);
+	return 	false;
 }
 
 #endif /* _MAIN_H */

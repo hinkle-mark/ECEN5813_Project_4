@@ -6,13 +6,13 @@ void i2cInit(void)
 	return;
 }
 
-I2CStatus_t i2cSetTLow(uint32_t t_low)
+I2CStatus_t i2cSetTLow(int16_t t_low)
 {
 	return success;
 }
 
-I2CStatus_t I2CReadTemperature(volatile uint32_t * raw_temp)
+I2CStatus_t I2CReadTemperature(volatile int16_t * raw_temp)
 {
-	*raw_temp = 111111;
+	*raw_temp = 0x190;
 	return success;
 }

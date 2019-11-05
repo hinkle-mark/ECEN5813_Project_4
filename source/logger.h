@@ -8,18 +8,14 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include "fsl_debug_console.h"
 
 /* Create Logging Structures */
 /* Created in preparation for later assignments */
 
 #define BUF_SIZE		50
 #define NUM_LEVELS      3
-#define NUM_FUNCTIONS 	4
-
-#ifdef BOARD
-#include "fsl_debug_console.h"
-#define printf	PRINTF
-#endif
+#define NUM_FUNCTIONS 	12
 
 /*** Logger Level Header Info ***/
 typedef enum
@@ -29,13 +25,25 @@ typedef enum
 	LL_Normal 	= 2
 } LoggerLevel;
 
+#define LOGGER_LEVEL_TEST		LL_Test
+#define LOGGER_LEVEL_DEBUG		LL_Debug
+#define LOGGER_LEVEL_NORMAL		LL_Normal
+
 /*** Function Name Header Info ***/
 typedef enum
 {
 	FN_main					= 0,
 	FN_redLEDOn             = 1,
 	FN_blueLEDOn			= 2,
-	FN_greenLEDOn			= 3
+	FN_greenLEDOn			= 3,
+	FN_stateMachineA		= 4,
+	FN_stateMachineB		= 5,
+	FN_tempReading        	= 6,
+	FN_avgWait				= 7,
+	FN_tempAlert			= 8,
+	FN_disconnect			= 9,
+	FN_calculateAverage		= 10,
+	FN_initSMParameters		= 11
 } FunctionName;
 
 /***********************************************
@@ -43,7 +51,7 @@ typedef enum
  * @brief	Initialize the global logger to its default state (disabled, WARNING, default buffer)
  *
  ***********************************************/
-void logInit();
+void logInit(LoggerLevel lvl);
 
 /***********************************************
  *
@@ -66,19 +74,6 @@ void logDisable();
 bool logStatus();
 
 /***********************************************
- * @brief	Prints out the address and values read from memory as well as logger info
-  *
- * @param[in] lvl	Specified level of logging info
- *
- * @param[in] fn	Name of function that called logger
- *
- * @param[in] loc	Pointer to base address to read from memory
- *
- * @param[in] len	Number of words to read from memory
- ***********************************************/
-void logData(LoggerLevel lvl, FunctionName fn, uint32_t* loc, size_t len);
-
-/***********************************************
  * @brief	Print out input message as well as logger info
  *
  * @param[in] lvl		Specified level of logging info
@@ -99,3 +94,15 @@ void logString(LoggerLevel lvl, FunctionName fn, char* message);
  * @param[in] value		Value to be logged
  ***********************************************/
 void logInteger(LoggerLevel lvl, FunctionName fn, uint32_t value);
+
+/***********************************************
+ * @brief	Print out formatted temp value as well as logger info
+ *
+ * @param[in] lvl		Specified level of logging info
+ *
+ * @param[in] fn		Name of function that called logger
+ *
+ * @param[in] value		Value to be logged
+ ***********************************************/
+void logTemperature(LoggerLevel lvl, FunctionName fn, float value);
+

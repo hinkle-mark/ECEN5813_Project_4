@@ -46,7 +46,7 @@
 #include "i2c.h"
 #include "state_machine.h"
 
-/* TODO: insert other definitions and declarations here. */
+#define loglevel LOGGER_LEVEL_TEST
 
 /*
  * @brief   Application entry point.
@@ -62,19 +62,28 @@ int main(void) {
 
     /* TODO Init Project Modules */
 	gpioInit(); //as well as LEDs
-    logInit();
+    logInit(loglevel);
     i2cInit();
+    logEnable();
     initSMParameters();
+
+    logString(LL_Debug, FN_main, "Board Initialized");
 
     state_machine 			= SM_A;
     state_t state_A 		= ST_TempReading;
     state_t state_B   		= ST_TempReading;
 
+    logString(LL_Normal, FN_main, "Program Start");
+
     while(1) {
     	if(pollAlertPin() == LOW_TEMP)
     	{
-    		state_A = ST_Alert;
-    		state_B = ST_Alert;
+    	    logString(LL_Debug, FN_main, "Alert Signal Received");
+
+    	    if(state_machine == SM_A)
+    	    	state_A = ST_Alert;
+    	    else if(state_machine == SM_B)
+    	    	state_B = ST_Alert;
     	}
 
     	switch(state_machine)
@@ -88,6 +97,7 @@ int main(void) {
 				break;
 
 			case END:
+			    logString(LL_Normal, FN_main, "Program Exited - Infinite Loop");
 				while(1);
 				break;
     	}

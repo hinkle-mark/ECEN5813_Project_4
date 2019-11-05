@@ -10,7 +10,8 @@
 #define TEST
 
 /* Private Variable */
-static bool LogEnable;
+static bool LOG_ENABLE;
+static LoggerLevel LOG_LEVEL;
 
 static const char * LoggerLevelStrings[NUM_LEVELS] = {
 		"Test: ",
@@ -22,24 +23,33 @@ static const char * FunctionNameStrings[NUM_FUNCTIONS] = {
 		"main: ",
 		"RedLEDOn: ",
 		"BlueLEDOn: ",
-		"GreenLEDOn: "
+		"GreenLEDOn: ",
+		"StateMachineA: ",
+		"StateMachineB: ",
+		"TempReading: ",
+		"AverageWait: ",
+		"TempAlert: ",
+		"Disconnect: ",
+		"CalculateAverage: ",
+		"InitSMParameters: "
 };
 
-void logInit()
+void logInit(LoggerLevel lvl)
 {
-	LogEnable = false;
+	LOG_ENABLE = false;
+	LOG_LEVEL = lvl;
 }
 
 
 void logEnable()
 {
-	if(LogEnable)
+	if(LOG_ENABLE)
 	{
 		printf("Log already Enabled\n\r");
 	}
 	else
 	{
-		LogEnable = true;
+		LOG_ENABLE = true;
 		printf("Log Enabled\n\r");
 	}
 
@@ -49,144 +59,137 @@ void logEnable()
 void logDisable()
 {
 	printf("Disabling Logger\n\r");
-	if(LogEnable)
+	if(LOG_ENABLE)
 	{
-		LogEnable = false;
+		LOG_ENABLE = false;
 	}
 }
 
 
 bool logStatus()
 {
-	return LogEnable;
+	return LOG_ENABLE;
 }
-
-
-void logData(LoggerLevel lvl, FunctionName fn, uint32_t* loc, size_t len)
-{
-
-	if(!LogEnable)
-	{
-		return;
-	}
-
-#ifdef NORMAL
-	if(lvl == LL_Normal)
-	{
-		uint32_t* currLoc = loc;
-		size_t i = 0;
-
-		printf(LoggerLevelStrings[lvl]);
-		printf(FunctionNameStrings[fn]);
-		printf("\n\r");
-
-		for(i=0; i<len; i++)
-		{
-			printf("Address: 0x%p		Value: 0x%02X \n\r", currLoc, *currLoc);
-			currLoc++;
-		}
-	}
-#endif
-
-#ifdef DEBUG
-	if((lvl == LL_Debug) || (lvl == LL_Normal))
-	{
-		uint32_t* currLoc = loc;
-		size_t i = 0;
-
-		printf(LoggerLevelStrings[lvl]);
-		printf(FunctionNameStrings[fn]);
-		printf("\n\r");
-
-		for(i=0; i<len; i++)
-		{
-			printf("Address: 0x%p		Value: 0x%02X \n\r", currLoc, *currLoc);
-			currLoc++;
-		}
-	}
-#endif
-
-#ifdef TEST
-	uint32_t* currLoc = loc;
-	size_t i = 0;
-
-	printf(LoggerLevelStrings[lvl]);
-	printf(FunctionNameStrings[fn]);
-	printf("\n\r");
-
-	for(i=0; i<len; i++)
-	{
-		printf("Address: 0x%p		Value: 0x%02X \n\r", currLoc, *currLoc);
-		currLoc++;
-	}
-#endif
-}
-
 
 void logString(LoggerLevel lvl, FunctionName fn, char* message)
 {
-	if(!LogEnable)
+	if(!LOG_ENABLE)
 	{
 		return;
 	}
 
-#ifdef NORMAL
-	if(lvl == LL_Normal)
+	switch(LOG_LEVEL)
 	{
+	case LOGGER_LEVEL_NORMAL:
+		if(lvl == LL_Normal)
+		{
+			printf(LoggerLevelStrings[lvl]);
+			printf(FunctionNameStrings[fn]);
+			printf("%s\n\r", message);
+		}
+		break;
+
+	case LOGGER_LEVEL_DEBUG:
+		if((lvl == LL_Debug) || (lvl == LL_Normal))
+		{
+			printf(LoggerLevelStrings[lvl]);
+			printf(FunctionNameStrings[fn]);
+			printf("%s\n\r", message);
+		}
+		break;
+
+	case LOGGER_LEVEL_TEST:
 		printf(LoggerLevelStrings[lvl]);
 		printf(FunctionNameStrings[fn]);
 		printf("%s\n\r", message);
-	}
-#endif
+		break;
 
-#ifdef DEBUG
-	if((lvl == LL_Debug) || (lvl == LL_Normal))
-	{
-		printf(LoggerLevelStrings[lvl]);
-		printf(FunctionNameStrings[fn]);
-		printf("%s\n\r", message);
+	default:
+		printf("LOG_LEVEL is undefined \n\r");
+		break;
 	}
-#endif
-
-#ifdef TEST
-	printf(LoggerLevelStrings[lvl]);
-	printf(FunctionNameStrings[fn]);
-	printf("%s\n\r", message);
-#endif
 }
 
 
 void logInteger(LoggerLevel lvl, FunctionName fn, uint32_t value)
 {
 	/* Ensure Logger Enabled */
-	if(!LogEnable)
+	if(!LOG_ENABLE)
 	{
 		return;
 	}
 
-#ifdef NORMAL
-	if(lvl == LL_Normal)
+	switch(LOG_LEVEL)
 	{
+	case LOGGER_LEVEL_NORMAL:
+		if(lvl == LL_Normal)
+		{
+			printf(LoggerLevelStrings[lvl]);
+			printf(FunctionNameStrings[fn]);
+			printf("%u\n\r", value);
+		}
+		break;
+
+	case LOGGER_LEVEL_DEBUG:
+		if((lvl == LL_Debug) || (lvl == LL_Normal))
+		{
+			printf(LoggerLevelStrings[lvl]);
+			printf(FunctionNameStrings[fn]);
+			printf("%u\n\r", value);
+		}
+		break;
+
+	case LOGGER_LEVEL_TEST:
 		printf(LoggerLevelStrings[lvl]);
 		printf(FunctionNameStrings[fn]);
 		printf("%u\n\r", value);
-	}
-#endif
+		break;
 
-#ifdef DEBUG
-	if((lvl == LL_Debug) || (lvl == LL_Normal))
+	default:
+		printf("LOG_LEVEL is undefined \n\r");
+		break;
+	}
+}
+
+
+void logTemperature(LoggerLevel lvl, FunctionName fn, float value)
+{
+	/* Ensure Logger Enabled */
+	if(!LOG_ENABLE)
 	{
+		return;
+	}
+
+	switch(LOG_LEVEL)
+	{
+	case LOGGER_LEVEL_NORMAL:
+		if(lvl == LL_Normal)
+		{
+			printf(LoggerLevelStrings[lvl]);
+			printf(FunctionNameStrings[fn]);
+			printf("Temperature(C): %.2f\n\r", value);
+		}
+		break;
+
+	case LOGGER_LEVEL_DEBUG:
+		if((lvl == LL_Debug) || (lvl == LL_Normal))
+		{
+			printf(LoggerLevelStrings[lvl]);
+			printf(FunctionNameStrings[fn]);
+			printf("Temperature(C): %.2f\n\r", value);
+		}
+		break;
+
+	case LOGGER_LEVEL_TEST:
 		printf(LoggerLevelStrings[lvl]);
 		printf(FunctionNameStrings[fn]);
-		printf("%u\n\r", value);
-	}
-#endif
+		printf("Temperature(C): %.2f\n\r", value);
+		break;
 
-#ifdef TEST
-	printf(LoggerLevelStrings[lvl]);
-	printf(FunctionNameStrings[fn]);
-	printf("%u\n\r", value);
-#endif
+	default:
+		printf("LOG_LEVEL is undefined \n\r");
+		break;
+	}
 }
 
 
