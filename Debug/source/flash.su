@@ -1,0 +1,5 @@
+flash.c:11:6:ledInit	8	static
+flash.c:30:6:redLEDOn	8	static
+flash.c:43:6:blueLEDOn	8	static
+flash.c:56:6:greenLEDOn	8	static
+flash.c:71:6:blinkLED	24	static
