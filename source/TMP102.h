@@ -1,6 +1,7 @@
 /* When ADD0 is wired to GND pin, device address is 1001000 */
 /* Can use a frequency of 400kHz */
 
+
 #include <stdint.h>
 
 #define TMP102_SLAVE_ADDR		0x48

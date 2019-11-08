@@ -75,7 +75,7 @@ int main(void) {
 
     logString(LL_Debug, FN_main, "Board Initialized");
 
-    if(loglevel == LL_Debug)
+    if(loglevel == LL_Test)
     {
     	test_main();
     	return 0;
