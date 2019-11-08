@@ -2,6 +2,7 @@
 #include "i2c.h"
 #include "logger.h"
 #include "gpio.h"
+#include "TMP102.h"
 
 /* Global Vars */
 volatile sm_t state_machine;
@@ -25,8 +26,7 @@ static const st_element_t STATE_TABLE[NUM_STATES] = {
  * * * * */
 void stateMachineA(state_t * state)
 {
-	state_t next_state;
-
+	state_t next_state = *state; //init to original state in case of invalid input
 	switch(*state)
 	{
 		case ST_TempReading:
@@ -50,6 +50,7 @@ void stateMachineA(state_t * state)
 			break;
 
 		default:
+			/* Returns if input invalid - state remains unchanged */
 			break;
 	}
 	*state = next_state;
@@ -79,7 +80,7 @@ state_t tempReading(void)
 
 	/* Read Sensor */
 	logString(LL_Debug, FN_tempReading, "Initiating I2C Read from TMP102");
-	I2CStatus_t ret = I2CReadTemperature(&data.raw);
+	read_status_t ret = TMP102TempRead(&data.raw);
 	if(ret == error)
 	{
 		logString(LL_Debug, FN_tempReading, "Temperature Read Failed");
@@ -92,12 +93,12 @@ state_t tempReading(void)
 
 	/* Convert Temperature */
 	logString(LL_Debug, FN_tempReading, "Converting Temperature Value");
-	data.cur = convertTemp(data.raw);
+	data.cur = TMP102ConvertT(data.raw);
 
 	logTemperature(LL_Normal, FN_tempReading, data.cur);
 
 	/* Check Value */
-	if(data.cur >= 0)
+	if(data.cur >= TMP102_LOW_TEMP)
 	{
 		logString(LL_Test, FN_tempReading, "Temperature Above T_Low");
 		return ST_AvgWait;
@@ -160,7 +161,7 @@ state_t tempAlert(void)
 
 	/* Read Sensor */
 	logString(LL_Debug, FN_tempAlert, "Initiating I2C Read from TMP102");
-	I2CStatus_t ret = I2CReadTemperature(&data.raw);
+	read_status_t ret = TMP102TempRead(&data.raw);
 	if(ret == error)
 	{
 		logString(LL_Debug, FN_tempAlert, "Temperature Read Failed");
@@ -173,7 +174,7 @@ state_t tempAlert(void)
 
 	/* Convert Temperature */
 	logString(LL_Debug, FN_tempAlert, "Converting Temperature Value");
-	data.cur = convertTemp(data.raw);
+	data.cur = TMP102ConvertT(data.raw);
 
 	logTemperature(LL_Normal, FN_tempAlert, data.cur);
 

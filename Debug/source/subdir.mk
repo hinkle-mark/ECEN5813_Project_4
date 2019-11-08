@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../source/TMP102.c \
 ../source/gpio.c \
 ../source/i2c.c \
 ../source/logger.c \
@@ -13,6 +14,7 @@ C_SRCS += \
 ../source/state_machine.c 
 
 OBJS += \
+./source/TMP102.o \
 ./source/gpio.o \
 ./source/i2c.o \
 ./source/logger.o \
@@ -22,6 +24,7 @@ OBJS += \
 ./source/state_machine.o 
 
 C_DEPS += \
+./source/TMP102.d \
 ./source/gpio.d \
 ./source/i2c.d \
 ./source/logger.d \

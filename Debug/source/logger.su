@@ -1,7 +1,0 @@
-logger.c:37:6:logInit	16	static
-logger.c:44:6:logEnable	8	static
-logger.c:59:6:logDisable	8	static
-logger.c:69:6:logStatus	8	static
-logger.c:74:6:logString	16	static
-logger.c:114:6:logInteger	16	static
-logger.c:155:6:logTemperature	24	static

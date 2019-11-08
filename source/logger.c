@@ -14,24 +14,29 @@ static bool LOG_ENABLE;
 static LoggerLevel LOG_LEVEL;
 
 static const char * LoggerLevelStrings[NUM_LEVELS] = {
-		"Test: ",
-		"Debug: ",
+		"Test: 	 ",
+		"Debug:  ",
 		"Status: "
 };
 
 static const char * FunctionNameStrings[NUM_FUNCTIONS] = {
-		"main: ",
-		"RedLEDOn: ",
-		"BlueLEDOn: ",
-		"GreenLEDOn: ",
-		"StateMachineA: ",
-		"StateMachineB: ",
-		"TempReading: ",
-		"AverageWait: ",
-		"TempAlert: ",
-		"Disconnect: ",
-		"CalculateAverage: ",
-		"InitSMParameters: "
+		"main: 				",
+		"RedLEDOn: 			",
+		"BlueLEDOn: 		",
+		"GreenLEDOn: 		",
+		"StateMachineA: 	",
+		"StateMachineB: 	",
+		"TempReading: 		",
+		"AverageWait: 		",
+		"TempAlert: 		",
+		"Disconnect: 		",
+		"CalculateAverage: 	",
+		"InitSMParameters: 	",
+		"I2CWriteBytes: 	",
+		"I2CReadBytes: 		",
+		"TMP102Init: 		",
+		"TMP102POST: 		",
+		"TMP102TempRead: 	"
 };
 
 void logInit(LoggerLevel lvl)
@@ -167,7 +172,7 @@ void logTemperature(LoggerLevel lvl, FunctionName fn, float value)
 		{
 			printf(LoggerLevelStrings[lvl]);
 			printf(FunctionNameStrings[fn]);
-			printf("Temperature(C): %.2f\n\r", value);
+			printf("Temperature(C): %.3f\n\r", value);
 		}
 		break;
 
@@ -176,14 +181,14 @@ void logTemperature(LoggerLevel lvl, FunctionName fn, float value)
 		{
 			printf(LoggerLevelStrings[lvl]);
 			printf(FunctionNameStrings[fn]);
-			printf("Temperature(C): %.2f\n\r", value);
+			printf("Temperature(C): %.3f\n\r", value);
 		}
 		break;
 
 	case LOGGER_LEVEL_TEST:
 		printf(LoggerLevelStrings[lvl]);
 		printf(FunctionNameStrings[fn]);
-		printf("Temperature(C): %.2f\n\r", value);
+		printf("Temperature(C): %.3f\n\r", value);
 		break;
 
 	default:

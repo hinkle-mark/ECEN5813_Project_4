@@ -68,17 +68,6 @@ static inline void delay(uint32_t delay_time)
 	}
 }
 
-/* * * * *
- * Brief: convertTemp - translates raw data into float
- * Input: raw_data
- * Returns: float value
- * * * * */
-static inline float convertTemp(int16_t raw_data)
-{
-	float temp = (0.0625) * raw_data;
-	return temp;
-}
-
 /*
  * Brief: stateToIndex - translates the state enum to uint for indexing state table
  * Input: state (current state)

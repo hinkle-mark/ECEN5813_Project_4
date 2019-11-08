@@ -15,7 +15,7 @@
 
 #define BUF_SIZE		50
 #define NUM_LEVELS      3
-#define NUM_FUNCTIONS 	12
+#define NUM_FUNCTIONS 	17
 
 /*** Logger Level Header Info ***/
 typedef enum
@@ -32,18 +32,23 @@ typedef enum
 /*** Function Name Header Info ***/
 typedef enum
 {
-	FN_main					= 0,
-	FN_redLEDOn             = 1,
-	FN_blueLEDOn			= 2,
-	FN_greenLEDOn			= 3,
-	FN_stateMachineA		= 4,
-	FN_stateMachineB		= 5,
-	FN_tempReading        	= 6,
-	FN_avgWait				= 7,
-	FN_tempAlert			= 8,
-	FN_disconnect			= 9,
-	FN_calculateAverage		= 10,
-	FN_initSMParameters		= 11
+	FN_main					,
+	FN_redLEDOn             ,
+	FN_blueLEDOn			,
+	FN_greenLEDOn			,
+	FN_stateMachineA		,
+	FN_stateMachineB		,
+	FN_tempReading        	,
+	FN_avgWait				,
+	FN_tempAlert			,
+	FN_disconnect			,
+	FN_calculateAverage		,
+	FN_initSMParameters		,
+	FN_i2cWriteBytes		,
+	FN_i2cReadBytes			,
+	FN_TMP102Init			,
+	FN_TMP102POST			,
+	FN_TMP102TempRead
 } FunctionName;
 
 /***********************************************

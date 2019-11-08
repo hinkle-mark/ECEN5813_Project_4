@@ -45,6 +45,7 @@
 #include "logger.h"
 #include "i2c.h"
 #include "state_machine.h"
+#include "TMP102.h"
 
 #define loglevel LOGGER_LEVEL_TEST
 
@@ -63,8 +64,9 @@ int main(void) {
     /* TODO Init Project Modules */
 	gpioInit(); //as well as LEDs
     logInit(loglevel);
-    i2cInit();
     logEnable();
+    i2c0Init();
+    TMP102Init();
     initSMParameters();
 
     logString(LL_Debug, FN_main, "Board Initialized");
