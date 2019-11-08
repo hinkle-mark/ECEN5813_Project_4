@@ -3,6 +3,11 @@
 #include "TMP102.h"
 #include "logger.h"
 
+
+/*
+ * i2c0Init
+ * @brief	Initialize the I2C module
+ */
 void i2c0Init(void)
 {
 	/* Route clock to I2C0 */
@@ -31,6 +36,18 @@ void i2c0Init(void)
 	I2C0->C2 |= (I2C_C2_HDRS_MASK);
 }
 
+
+/*
+ * i2c0WriteBytes
+ * @brief Writes 2 bytes to the specified register
+ *
+ * @param[in] dev		Address of slave device
+ *
+ * @param[in] reg		Register to write value to
+ *
+ * @param[in] data		2 bytes of data to write
+ *
+ */
 void i2c0WriteBytes(uint8_t dev, uint8_t reg, uint16_t data)
 {
 	uint8_t MSB, LSB;
@@ -59,6 +76,18 @@ void i2c0WriteBytes(uint8_t dev, uint8_t reg, uint16_t data)
 	logInteger(LL_Debug, FN_i2cWriteBytes, (uint32_t)data);
 }
 
+
+/*
+ * i2c0WriteBytes
+ * @brief Writes 2 bytes to the specified register
+ *
+ * @param[in] dev		Address of slave device
+ *
+ * @param[in] reg		Register to read value from
+ *
+ * @returns				raw temp data
+ *
+ */
 int16_t i2c0ReadBytes(uint8_t dev, uint8_t reg)
 {
 	int16_t data = 0;
@@ -98,7 +127,7 @@ int16_t i2c0ReadBytes(uint8_t dev, uint8_t reg)
 	data |= (int16_t) bytein;
 
 	data = data >> 4;
-//	data = data & 0xFFF;
+	data = data & 0xFFF;
 	I2C_IF_WAIT;
 	I2C_M_STOP;
 

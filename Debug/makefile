@@ -28,25 +28,25 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: PES_Project_4.axf
+all: ECEN5813_Project_4.axf
 
 # Tool invocations
-PES_Project_4.axf: $(OBJS) $(USER_OBJS)
+ECEN5813_Project_4.axf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
-	arm-none-eabi-gcc -nostdlib -Xlinker -Map="PES_Project_4.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -Xlinker --sort-section=alignment -Xlinker --cref -mcpu=cortex-m0plus -mthumb -T PES_Project_4_Debug.ld -o "PES_Project_4.axf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -nostdlib -Xlinker -Map="ECEN5813_Project_4.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -Xlinker --sort-section=alignment -Xlinker --cref -mcpu=cortex-m0plus -mthumb -T PES_Project_4_Debug.ld -o "ECEN5813_Project_4.axf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
 
 # Other Targets
 clean:
-	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) PES_Project_4.axf
+	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) ECEN5813_Project_4.axf
 	-@echo ' '
 
 post-build:
 	-@echo 'Performing post-build steps'
-	-arm-none-eabi-size "PES_Project_4.axf"; # arm-none-eabi-objcopy -v -O binary "PES_Project_4.axf" "PES_Project_4.bin" ; # checksum -p MKL25Z128xxx4 -d "PES_Project_4.bin";
+	-arm-none-eabi-size "ECEN5813_Project_4.axf"; # arm-none-eabi-objcopy -v -O binary "ECEN5813_Project_4.axf" "ECEN5813_Project_4.bin" ; # checksum -p MKL25Z128xxx4 -d "ECEN5813_Project_4.bin";
 	-@echo ' '
 
 .PHONY: all clean dependents post-build

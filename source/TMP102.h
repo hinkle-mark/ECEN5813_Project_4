@@ -34,6 +34,5 @@ typedef enum
 
 void TMP102Init();
 int TMP102POST();
-void TMP102RegWrite(uint8_t reg, uint8_t data);
 read_status_t TMP102TempRead(volatile int16_t * rawData);
 float TMP102ConvertT(volatile int16_t data);

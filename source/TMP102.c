@@ -3,18 +3,25 @@
 #include "i2c.h"
 #include "logger.h"
 
-/* PORTx_PCRn is the register to set for gpio interrupts from alert pin */
+
+/************************************
+ * TMP102Init
+ * @brief	Initialize TMP102 with Hi and Low alarm values
+ ************************************/
 
 void TMP102Init()
 {
-	int16_t lowTempWrite	= (TMP102_LOW_TEMP_B0 << 8) + TMP102_LOW_TEMP_B1;
-	int16_t highTempWrite 	= (TMP102_HI_TEMP_B0 << 8)  + TMP102_HI_TEMP_B1;
+	int16_t lowTempWrite	= (TMP102_LOW_TEMP_B0 << 8) | TMP102_LOW_TEMP_B1;
+	int16_t highTempWrite 	= (TMP102_HI_TEMP_B0 << 8)  | TMP102_HI_TEMP_B1;
 
 	i2c0WriteBytes(TMP102_SLAVE_ADDR, TMP102_TLOW_REG, lowTempWrite);
 	i2c0WriteBytes(TMP102_SLAVE_ADDR, TMP102_THI_REG, highTempWrite);
 }
 
-/* Read data that was written in initialization and verify accuracy */
+/*
+ * TMP102POST
+ * @brief	Verify data written to TMP102 on initialization
+ */
 int TMP102POST()
 {
 	uint16_t lowTempRead, hiTempRead;
@@ -33,12 +40,13 @@ int TMP102POST()
 	}
 }
 
-
-void TMP102RegWrite(uint8_t reg, uint8_t data)
-{
-
-}
-
+/*
+ * TMP102TempRead
+ * @brief	Reads the 'value' of the temperature register
+ * @param[out] int16_t* rawData		Value of the data read
+ *
+ * @returns Status of read operation
+ */
 read_status_t TMP102TempRead(volatile int16_t * rawData)
 {
 	*rawData = i2c0ReadBytes(TMP102_SLAVE_ADDR, TMP102_TEMP_REG);
@@ -46,7 +54,29 @@ read_status_t TMP102TempRead(volatile int16_t * rawData)
 	return success;
 }
 
+
+/*
+ * TMP102ConvertT
+ *
+ * @brief Converts raw temperature data to Celcius
+ *
+ * @param[in] Data to convert
+ *
+ * @returns		Floating point value of temp in Celcius
+ */
+
 float TMP102ConvertT(volatile int16_t data)
 {
-	return 0.0625 * data;
+	float temp_value;
+	/* if the leading bit is a 1, the number is negative */
+	if(data & 0x800)
+	{
+		data = ((~data) + 1) & 0xFFF;
+		temp_value = (float) data * 0.0625 * -1;
+	}
+	else
+	{
+		temp_value = (float) data * 0.0625;
+	}
+	return temp_value;
 }

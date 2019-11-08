@@ -46,8 +46,9 @@
 #include "i2c.h"
 #include "state_machine.h"
 #include "TMP102.h"
+#include "Testsuite.h"
 
-#define loglevel LOGGER_LEVEL_TEST
+#define loglevel LOGGER_LEVEL_DEBUG
 
 /*
  * @brief   Application entry point.
@@ -69,7 +70,16 @@ int main(void) {
     TMP102Init();
     initSMParameters();
 
+    TMP102POST();
+
+
     logString(LL_Debug, FN_main, "Board Initialized");
+
+    if(loglevel == LL_Debug)
+    {
+    	test_main();
+    	return 0;
+    }
 
     state_machine 			= SM_A;
     state_t state_A 		= ST_TempReading;
