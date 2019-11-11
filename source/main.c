@@ -48,7 +48,7 @@
 #include "TMP102.h"
 #include "Testsuite.h"
 
-#define loglevel LOGGER_LEVEL_DEBUG
+#define loglevel LOGGER_LEVEL_NORMAL
 
 /*
  * @brief   Application entry point.
